@@ -32,6 +32,7 @@ export interface CreateRunParameters {
   group?: string;
   cypressVersion?: string;
   machineId?: string;
+  physicalMachineId?: string;
 }
 
 export type CreateRunWarning = Record<string, string> & {

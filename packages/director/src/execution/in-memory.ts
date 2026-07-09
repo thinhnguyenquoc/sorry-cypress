@@ -59,7 +59,7 @@ const createRun: ExecutionDriver['createRun'] = async (
 
   const runId = generateRunIdHash(ciBuildId, params.projectId);
 
-  const physicalMachineId = params.machineId ?? generateUUID();
+  const physicalMachineId = params.physicalMachineId ?? params.machineId ?? generateUUID();
   const workerId = generateUUID();
 
   const groupId = params.group ?? generateGroupId(params.platform, ciBuildId);
@@ -67,7 +67,7 @@ const createRun: ExecutionDriver['createRun'] = async (
 
   const response: CreateRunResponse = {
     groupId,
-    machineId: physicalMachineId,
+    machineId: workerId,
     workerId,
     runId,
     runUrl: getDashboardRunURL(runId),

@@ -33,6 +33,7 @@ export const handleCreateRun: RequestHandler<
   const response = await executionDriver.createRun({
     ...req.body,
     cypressVersion,
+    physicalMachineId: req.headers['x-physical-machine-id']?.toString(),
   });
 
   getLogger().log(response, `Responding to machine`);

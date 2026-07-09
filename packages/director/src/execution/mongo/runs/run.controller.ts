@@ -60,7 +60,7 @@ export const createRun: ExecutionDriver['createRun'] = async (params) => {
 
   const groupId = params.group ?? generateGroupId(params.platform, ciBuildId);
 
-  const physicalMachineId = params.machineId ?? generateUUID();
+  const physicalMachineId = params.physicalMachineId ?? params.machineId ?? generateUUID();
   const workerId = generateUUID();
   const enhanceSpecForThisRun = enhanceSpec(groupId);
 
@@ -68,7 +68,7 @@ export const createRun: ExecutionDriver['createRun'] = async (params) => {
 
   const response: CreateRunResponse = {
     groupId,
-    machineId: physicalMachineId,
+    machineId: workerId,
     workerId,
     runId,
     runUrl: getDashboardRunURL(runId),
