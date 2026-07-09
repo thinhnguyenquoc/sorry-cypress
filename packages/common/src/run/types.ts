@@ -53,6 +53,7 @@ export interface RunMetaData {
   projectId: string;
   platform: PlatformData;
   ci: RunCI;
+  machineId?: string;
 }
 export interface RunSpec {
   spec: string;
