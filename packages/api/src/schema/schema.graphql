@@ -106,6 +106,7 @@ type RunSpec {
   claimedAt: String
   completedAt: String
   machineId: String
+  workerId: String
   groupId: String
   results: RunSpecResults
 }
