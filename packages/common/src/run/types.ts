@@ -31,6 +31,7 @@ export interface CreateRunParameters {
   platform: PlatformData;
   group?: string;
   cypressVersion?: string;
+  machineId?: string;
 }
 
 export type CreateRunWarning = Record<string, string> & {
@@ -39,6 +40,7 @@ export type CreateRunWarning = Record<string, string> & {
 export interface CreateRunResponse {
   groupId: string;
   machineId: string;
+  workerId?: string;
   runId: string;
   runUrl: string;
   warnings?: CreateRunWarning[];
@@ -59,6 +61,7 @@ export interface RunSpec {
   claimedAt: string | null;
   completedAt: string | null;
   machineId?: string;
+  workerId?: string;
   results?: {
     error?: string;
     stats: InstanceResultStats;
@@ -72,6 +75,11 @@ export type RunCompletion =
       inactivityTimeoutMs?: number;
     };
 
+export interface RunWorker {
+  workerId: string;
+  machineId: string;
+}
+
 export interface Run {
   runId: string;
   createdAt: string;
@@ -80,6 +88,7 @@ export interface Run {
   completion?: RunCompletion;
   cypressVersion?: string;
   progress: RunProgress;
+  workers?: RunWorker[];
 }
 
 export interface Build {

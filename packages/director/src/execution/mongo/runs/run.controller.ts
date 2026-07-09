@@ -42,6 +42,7 @@ import { createProject, getProjectById } from './../projects/project.model';
 import {
   addNewGroupToRun,
   addNewJobToRun,
+  addWorkerToRun,
   createRun as storageCreateRun,
   getNewGroupTemplate,
   getRunById,
@@ -59,14 +60,16 @@ export const createRun: ExecutionDriver['createRun'] = async (params) => {
 
   const groupId = params.group ?? generateGroupId(params.platform, ciBuildId);
 
-  const machineId = generateUUID();
+  const physicalMachineId = params.machineId ?? generateUUID();
+  const workerId = generateUUID();
   const enhanceSpecForThisRun = enhanceSpec(groupId);
 
   const isProviderGitlab = params.ci.provider === 'gitlab';
 
   const response: CreateRunResponse = {
     groupId,
-    machineId,
+    machineId: physicalMachineId,
+    workerId,
     runId,
     runUrl: getDashboardRunURL(runId),
     isNewRun: true,
@@ -97,12 +100,19 @@ export const createRun: ExecutionDriver['createRun'] = async (params) => {
         projectId: params.projectId,
         platform: params.platform,
         ci: params.ci,
+        machineId: physicalMachineId,
       },
       progress: {
         updatedAt: new Date(),
         groups: [getNewGroupTemplate(groupId, specs.length)],
       },
       specs,
+      workers: [
+        {
+          workerId,
+          machineId: physicalMachineId,
+        },
+      ],
     };
     if (isProviderGitlab && GITLAB_JOB_RETRIES == 'true') {
       newRun.meta.ci = {
@@ -127,6 +137,8 @@ export const createRun: ExecutionDriver['createRun'] = async (params) => {
   } catch (error) {
     if (error.code && error.code === RUN_EXISTS) {
       response.isNewRun = false;
+
+      await addWorkerToRun(runId, workerId, physicalMachineId);
 
       // serverless: prone to race condition on serverless
       const run = await getRunById(runId);
@@ -221,7 +233,16 @@ export const getNextTask: ExecutionDriver['getNextTask'] = async ({
   );
 
   try {
-    await setSpecClaimed(runId, groupId, spec.instanceId, machineId);
+    const worker = run.workers?.find((w) => w.workerId === machineId);
+    const physicalMachineId = worker?.machineId ?? machineId;
+
+    await setSpecClaimed(
+      runId,
+      groupId,
+      spec.instanceId,
+      physicalMachineId,
+      machineId
+    );
     await createInstance({
       runId,
       projectId: run.meta.projectId,

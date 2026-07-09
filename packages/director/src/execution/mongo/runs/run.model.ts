@@ -92,10 +92,11 @@ export const setSpecClaimed = async (
   runId: string,
   groupId: string,
   instanceId: string,
-  machineId: string
+  machineId: string,
+  workerId?: string
 ) => {
   getLogger().log(
-    { runId, groupId, instanceId, machineId },
+    { runId, groupId, instanceId, machineId, workerId },
     'Setting spec as claimed'
   );
   const { matchedCount, modifiedCount } = await Collection.run().updateOne(
@@ -114,6 +115,7 @@ export const setSpecClaimed = async (
       },
       $set: {
         'specs.$[spec].machineId': machineId,
+        'specs.$[spec].workerId': workerId,
         'specs.$[spec].claimedAt': new Date().toISOString(),
       },
       $inc: {
@@ -320,6 +322,21 @@ export const addNewGroupToRun = async (
       $push: {
         specs: { $each: specs },
         'progress.groups': getNewGroupTemplate(groupId, specs.length),
+      },
+    }
+  );
+};
+
+export const addWorkerToRun = async (
+  runId: string,
+  workerId: string,
+  machineId: string
+) => {
+  await Collection.run().updateOne(
+    { runId },
+    {
+      $push: {
+        workers: { workerId, machineId },
       },
     }
   );
