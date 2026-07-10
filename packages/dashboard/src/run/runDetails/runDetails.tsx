@@ -154,7 +154,7 @@ function convertToRows(
           claimedAt: spec.claimedAt,
           stats: spec.results?.stats,
         }),
-        machine: spec.machineId ? getMachineName(spec.machineId) : null,
+        machine: spec.workerId ? getMachineName(spec.workerId) : (spec.machineId ? getMachineName(spec.machineId) : null),
         groupId: spec.groupId,
         instanceLink: generatePath(`/instance/${spec.instanceId}`),
         specName:

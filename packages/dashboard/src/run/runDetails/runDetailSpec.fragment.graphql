@@ -3,6 +3,7 @@ fragment RunDetailSpec on RunSpec {
   spec
   claimedAt
   machineId
+  workerId
   groupId
   results {
     error
