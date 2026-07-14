@@ -1,7 +1,9 @@
 import {
+  Assessment as AssessmentIcon,
   FlakyRounded,
   Loop as LoopIcon,
   MenuBook as MenuBookIcon,
+  OpenInNew as OpenInNewIcon,
   VisibilityOff as VisibilityOffIcon,
 } from '@mui/icons-material';
 import { Alert, Grid, Skeleton, Typography } from '@mui/material';
@@ -27,12 +29,14 @@ import {
   setNav,
 } from '@sorry-cypress/dashboard/lib/navigation';
 import { RunSummary } from '@sorry-cypress/dashboard/run/runSummary/runSummary';
+import { environment } from '@sorry-cypress/dashboard/state/environment';
 import React, { FunctionComponent, useLayoutEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { RunDetails } from './runDetails';
 
 export const RunDetailsView: RunDetailsViewComponent = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const autoRefreshRate = useAutoRefreshRate();
   const [hidePassedSpecs, setHidePassedSpecs] = useHideSuccessfulSpecs();
   const [showFlakySpecs, setShowFlakySpecs] = useShowFlakySpecs();
@@ -152,6 +156,18 @@ export const RunDetailsView: RunDetailsViewComponent = () => {
               switchReadableSpecNames();
             },
           },
+          ...(environment.MASTER_SERVER_URL && data?.run?.meta?.ciBuildId
+            ? [
+                {
+                  key: 'fullReport',
+                  text: 'Full Report',
+                  icon: AssessmentIcon,
+                  toggleButton: false as const,
+                  primary: true,
+                  onClick: () => navigate(`/run/${id}/report`),
+                },
+              ]
+            : []),
         ]}
       />
       <RunSummary run={data.run} />

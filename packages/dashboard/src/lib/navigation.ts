@@ -38,6 +38,7 @@ export const getProjectPath = detectBadPath(
   (projectId: string) => `${encodeURIComponent(projectId)}/runs`
 );
 export const getRunPath = detectBadPath((id: string) => `run/${id}`);
+export const getRunReportPath = detectBadPath((id: string) => `run/${id}/report`);
 export const getInstancePath = detectBadPath((id: string) => `instance/${id}`);
 export const getTestPath = (instanceId: string, testId: string) =>
   `instance/${instanceId}/test/${testId}`;
